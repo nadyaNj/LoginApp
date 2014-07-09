@@ -9,6 +9,7 @@
     <string name="password">Password</string>
     <string name="cancel_button">Cancel</string>
     <string name="login_button">Login</string>
+    <string name="registration_button">Registration</string>
     <string name="login_successful">Login Successful</string>
     <string name="invalid_login">Invalid Login</string>
     <string name="logout_button">logOut</string>

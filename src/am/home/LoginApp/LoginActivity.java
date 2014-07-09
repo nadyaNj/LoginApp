@@ -3,25 +3,28 @@ package am.home.LoginApp;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class LoginActivity extends Activity {
     EditText email;
     EditText password;
     Button loginButton;
-    Toast currentToast;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+        setContentView(R.layout.login);
+    }
 
+    public void userLogin(View view) {
 
-        email=(EditText)this.findViewById(R.id.emailText);
-        password=(EditText)this.findViewById(R.id.passwordText);
+        email=(EditText)this.findViewById(R.id.loginEmail);
+        password=(EditText)this.findViewById(R.id.loginPassword);
         loginButton=(Button)this.findViewById(R.id.loginButton);
         loginButton.setOnClickListener(new View.OnClickListener() {
 
@@ -29,33 +32,48 @@ public class LoginActivity extends Activity {
             public void onClick(View v) {
                 if(Validation.validateEmail(email.getText().toString().trim()) &&
                         Validation.validatePassword(password.getText().toString().trim())) {
-                    showToast(getString(R.string.login_successful));
+                    Toaster.showToast(getString(R.string.login_successful));
 
+                    Bundle extras = new Bundle();
+                    extras.putString("username",email.getText().toString().split("@")[0]);
+                    extras.putString("password", password.getText().toString());
                     Intent i = new Intent(getApplicationContext(),UserPageActivity.class);
 
-                    i.putExtra("username",email.getText().toString().split("@")[0]);
+                    i.putExtras(extras);
                     startActivity(i);
                     return;
 
                 }
-                showToast(getString(R.string.invalid_login));
+                Toaster.showToast(getString(R.string.invalid_login));
             }
         });
     }
 
-    void showToast(String text)
-    {
-        if(currentToast == null)
-        {
-            currentToast = Toast.makeText(this, text, Toast.LENGTH_SHORT);
-        }
+    public void userRegistration(View view) {
+        startActivityForResult(new Intent(this, RegistrationActivity.class), ActivityRequestCodes.BACK_REQUEST_CODE);
 
-        currentToast.setText(text);
-        currentToast.setDuration(Toast.LENGTH_SHORT);
-        currentToast.show();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.e("LoginActivity", requestCode+"");
+        switch (requestCode) {
+            case ActivityRequestCodes.BACK_REQUEST_CODE:
+                email=(EditText)this.findViewById(R.id.loginEmail);
+                password=(EditText)this.findViewById(R.id.loginPassword);
+                email.setText(data.getStringExtra("regLogin"));
+                password.setText(data.getStringExtra("regPassword"));
 
+                break;
+            case ActivityRequestCodes.CAMERA_REQUEST_CODE:
+                email=(EditText)this.findViewById(R.id.loginEmail);
+                password=(EditText)this.findViewById(R.id.loginPassword);
+                email.setText(data.getStringExtra("userLogin"));
+                password.setText(data.getStringExtra("userPassword"));
+                break;
+            default:
+                break;
+        }
 
-
+    }
 }
